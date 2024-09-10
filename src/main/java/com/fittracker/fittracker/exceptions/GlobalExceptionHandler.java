@@ -8,7 +8,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.WebRequest;
 
 @ControllerAdvice
 @RestController
@@ -37,12 +36,20 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(ExistingEmailException.class)
-  public ResponseEntity<ErrorObject> handleExistingEmailException(ExistingEmailException ex, WebRequest request) {
+  public ResponseEntity<ErrorObject> handleExistingEmailException(ExistingEmailException ex) {
     ErrorObject errorObject = new ErrorObject();
     errorObject.setStatusCode(HttpStatus.CONFLICT.value());
     errorObject.setMessage(ex.getMessage());
     errorObject.setTimestamp(new Date());
-
     return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(ResourceNotFoundException.class)
+  public ResponseEntity<ErrorObject> handleResourceNotFoundException(ResourceNotFoundException ex) {
+    ErrorObject errorObject = new ErrorObject();
+    errorObject.setStatusCode(HttpStatus.NOT_FOUND.value());
+    errorObject.setMessage(ex.getMessage());
+    errorObject.setTimestamp(new Date());
+    return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.NOT_FOUND);
   }
 }
