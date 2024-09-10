@@ -22,7 +22,7 @@ public class JwtUtil {
   private String SECRET_KEY;
 
   public String generateToken(String email) {
-    List<GrantedAuthority> grantedAuthorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    List<GrantedAuthority> grantedAuthorities = List.of(new SimpleGrantedAuthority("USER"));
     return Jwts.builder()
         .setId("userJWT")
         .setSubject(email)
