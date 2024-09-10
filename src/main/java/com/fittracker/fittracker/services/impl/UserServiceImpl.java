@@ -28,6 +28,7 @@ public class UserServiceImpl implements UserService {
   private final JwtUtil jwtUtil;
   private final AuthenticationManager authenticationManager;
 
+  @Override
   public AuthResponseDto login(LoginDto request) {
     UserEntity user = userRepository.findByEmail(request.getEmail())
         .orElseThrow(() -> new UsernameNotFoundException(
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
     return new AuthResponseDto(token);
   }
 
+  @Override
   public AuthResponseDto register(RegisterDto request) {
     if (userRepository.findByEmail(request.getEmail()).isPresent()) {
       throw new ExistingEmailException("This email is already taken");
