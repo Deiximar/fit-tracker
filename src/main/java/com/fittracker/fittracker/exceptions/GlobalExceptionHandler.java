@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     errorObject.setStatusCode(HttpStatus.UNAUTHORIZED.value());
     errorObject.setMessage("Invalid email or password.");
     errorObject.setTimestamp(new Date());
-    return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.NOT_FOUND);
+    return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.UNAUTHORIZED);
   }
 
   @ExceptionHandler(ExistingEmailException.class)
@@ -51,5 +51,14 @@ public class GlobalExceptionHandler {
     errorObject.setMessage(ex.getMessage());
     errorObject.setTimestamp(new Date());
     return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(UnauthorizedException.class)
+  public ResponseEntity<ErrorObject> handleUnauthorizedException(UnauthorizedException ex) {
+    ErrorObject errorObject = new ErrorObject();
+    errorObject.setStatusCode(HttpStatus.UNAUTHORIZED.value());
+    errorObject.setMessage(ex.getMessage());
+    errorObject.setTimestamp(new Date());
+    return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.UNAUTHORIZED);
   }
 }
