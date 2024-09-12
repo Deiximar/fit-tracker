@@ -11,7 +11,5 @@ import lombok.Data;
 public class RoutineDto {
   private Integer id;
   private String name;
-  private Integer userId;
-  private List<Integer> exerciseIds;
-  private List<Exercise> exercises;
+  private List<RoutineExerciseDto> routineExercises;
 }

@@ -3,9 +3,7 @@ package com.fittracker.fittracker.models.entity;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,29 +12,28 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "routines")
-public class Routine {
-
+@Table(name = "routine_exercise")
+public class RoutineExercise {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @Column(length = 100, nullable = false)
-  private String name;
+  @ManyToOne
+  @JoinColumn(name = "routine_id")
+  private Routine routine;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private UserEntity user;
+  @ManyToOne
+  @JoinColumn(name = "exercise_id")
+  private Exercise exercise;
 
-  @OneToMany(mappedBy = "routine", cascade = CascadeType.ALL)
-  private List<RoutineExercise> routineExercises;
+  @OneToMany(mappedBy = "routineExercise", cascade = CascadeType.ALL)
+  private List<ExerciseTarget> targets;
+
 }
