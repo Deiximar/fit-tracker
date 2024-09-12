@@ -16,7 +16,7 @@ public class ExerciseDto {
   private String name;
   private String bodyPart;
   private String equipment;
-  private String gifUrl;
+  private String gifPath;
   private List<String> instructions;
 
 }

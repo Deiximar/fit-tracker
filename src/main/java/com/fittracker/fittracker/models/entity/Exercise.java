@@ -1,16 +1,13 @@
 package com.fittracker.fittracker.models.entity;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,20 +29,16 @@ public class Exercise {
   @Column(length = 100, nullable = false)
   private String name;
 
-  @ManyToOne
-  @JoinColumn(name = "body_part_id", nullable = false)
-  private BodyPart bodyPart;
+  @Column(name = "body_part")
+  private String bodyPart;
 
-  @ManyToOne
-  @JoinColumn(name = "equipment_id", nullable = false)
-  private Equipment equipment;
+  @Column(name = "equipment")
+  private String equipment;
 
   @Column(length = 250)
-  private String giftUrl;
+  private String gifPath;
 
-  @ElementCollection
-  @CollectionTable(name = "exercise_instructions", joinColumns = @JoinColumn(name = "exercise_id"))
-  @Column(name = "instruction")
+  @Column(name = "instructions")
   private List<String> instructions;
 
 }

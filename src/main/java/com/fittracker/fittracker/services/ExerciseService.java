@@ -1,16 +1,14 @@
 package com.fittracker.fittracker.services;
 
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 import com.fittracker.fittracker.models.dto.ExerciseDto;
+import com.fittracker.fittracker.models.dto.PagedResponseDto;
 
 public interface ExerciseService {
 
-  List<ExerciseDto> getAllExercises();
+  PagedResponseDto getAllExercises(Pageable pageable, String bodyPart, String equipment, String searchText);
 
   ExerciseDto getExerciseById(Integer id);
 
-  List<ExerciseDto> getExercisesByBodyPart(String bodyPartName);
-
-  List<ExerciseDto> getExercisesByEquipment(String equipmentName);
 }
