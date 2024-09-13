@@ -33,7 +33,7 @@ public class RoutineExercise {
   @JoinColumn(name = "exercise_id")
   private Exercise exercise;
 
-  @OneToMany(mappedBy = "routineExercise", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "routineExercise", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ExerciseTarget> targets;
 
 }

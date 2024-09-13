@@ -7,6 +7,8 @@ import com.fittracker.fittracker.models.dto.RoutineDto;
 public interface RoutineService {
   List<RoutineDto> getAllRoutines();
 
+  List<RoutineDto> getUserRoutines(String email);
+
   RoutineDto getRoutineById(Integer id);
 
   RoutineDto createRoutine(RoutineDto routineDto);

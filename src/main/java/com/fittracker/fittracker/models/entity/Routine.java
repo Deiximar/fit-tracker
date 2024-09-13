@@ -37,6 +37,6 @@ public class Routine {
   @JoinColumn(name = "user_id", nullable = false)
   private UserEntity user;
 
-  @OneToMany(mappedBy = "routine", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "routine", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<RoutineExercise> routineExercises;
 }

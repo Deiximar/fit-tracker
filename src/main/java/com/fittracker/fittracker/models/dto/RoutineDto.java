@@ -2,8 +2,6 @@ package com.fittracker.fittracker.models.dto;
 
 import java.util.List;
 
-import com.fittracker.fittracker.models.entity.Exercise;
-
 import lombok.Data;
 
 @Data
