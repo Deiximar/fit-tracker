@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +31,13 @@ public class RoutineController {
   @GetMapping
   public ResponseEntity<List<RoutineDto>> getAllRoutines() {
     return ResponseEntity.ok(routineService.getAllRoutines());
+  }
+
+  @GetMapping("/my-routines")
+  public ResponseEntity<List<RoutineDto>> getMyRoutines() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String userEmail = authentication.getName();
+    return ResponseEntity.ok(routineService.getUserRoutines(userEmail));
   }
 
   @GetMapping("{id}")
