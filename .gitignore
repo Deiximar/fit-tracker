@@ -119,3 +119,10 @@ buildNumber.properties
 ###images###
 images/
 # End of https://www.toptal.com/developers/gitignore/api/macos,java,dotenv,maven
+
+*.json
+
+*.txt
+
+migrator.js
+otromi.js
