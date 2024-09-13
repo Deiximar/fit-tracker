@@ -116,4 +116,13 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+###images###
+images/
 # End of https://www.toptal.com/developers/gitignore/api/macos,java,dotenv,maven
+
+*.json
+
+*.txt
+
+migrator.js
+otromi.js
