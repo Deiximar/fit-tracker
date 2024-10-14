@@ -1,4 +1,4 @@
-package com.fittracker.fittracker.exceptions;
+package com.fittracker.fittracker.config.exceptions;
 
 public class UnauthorizedException extends RuntimeException {
   public UnauthorizedException(String message) {
