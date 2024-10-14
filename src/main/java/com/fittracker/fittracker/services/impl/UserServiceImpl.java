@@ -9,9 +9,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.fittracker.fittracker.exceptions.ExistingEmailException;
-import com.fittracker.fittracker.exceptions.UsernameNotFoundException;
-import com.fittracker.fittracker.jwt.JwtUtil;
+import com.fittracker.fittracker.config.exceptions.ExistingEmailException;
+import com.fittracker.fittracker.config.exceptions.UsernameNotFoundException;
+import com.fittracker.fittracker.config.security.jwt.JwtUtil;
 import com.fittracker.fittracker.models.dto.*;
 import com.fittracker.fittracker.models.entity.*;
 import com.fittracker.fittracker.repositories.UserRepository;
