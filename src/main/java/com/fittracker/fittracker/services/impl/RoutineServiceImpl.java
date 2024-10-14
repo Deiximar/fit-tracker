@@ -8,8 +8,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.fittracker.fittracker.exceptions.ResourceNotFoundException;
-import com.fittracker.fittracker.exceptions.UnauthorizedException;
+import com.fittracker.fittracker.config.exceptions.ResourceNotFoundException;
+import com.fittracker.fittracker.config.exceptions.UnauthorizedException;
 import com.fittracker.fittracker.models.dto.ExerciseTargetDto;
 import com.fittracker.fittracker.models.dto.RoutineDto;
 import com.fittracker.fittracker.models.dto.RoutineExerciseDto;
@@ -98,6 +98,7 @@ public class RoutineServiceImpl implements RoutineService {
 
   @Override
   public RoutineDto updateRoutine(Integer id, RoutineDto routineDto) {
+    System.out.println(routineDto);
     Routine routine = routineRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Routine not found"));
 
@@ -113,7 +114,9 @@ public class RoutineServiceImpl implements RoutineService {
     List<RoutineExercise> updatedRoutineExercises = routineDto.getRoutineExercises().stream()
         .map(routineExerciseDto -> {
           Exercise exercise = exerciseRepository.findById(routineExerciseDto.getExerciseId())
-              .orElseThrow(() -> new ResourceNotFoundException("Exercise not found"));
+              .orElseThrow(
+                  () -> new ResourceNotFoundException(
+                      "Exercise not found: " + routineExerciseDto.getExerciseId() + "ee"));
 
           RoutineExercise routineExercise = new RoutineExercise();
           routineExercise.setRoutine(finalRoutine);

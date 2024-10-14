@@ -1,4 +1,4 @@
-package com.fittracker.fittracker.exceptions;
+package com.fittracker.fittracker.config.exceptions;
 
 import lombok.Data;
 

@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.fittracker.fittracker.exceptions.ResourceNotFoundException;
+import com.fittracker.fittracker.config.exceptions.ResourceNotFoundException;
 import com.fittracker.fittracker.models.dto.ExerciseDto;
 import com.fittracker.fittracker.models.dto.PagedResponseDto;
 import com.fittracker.fittracker.models.entity.Exercise;
