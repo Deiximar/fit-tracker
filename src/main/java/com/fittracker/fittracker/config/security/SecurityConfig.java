@@ -1,4 +1,4 @@
-package com.fittracker.fittracker.config;
+package com.fittracker.fittracker.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.fittracker.fittracker.jwt.JwtAuthenticationFilter;
+import com.fittracker.fittracker.config.security.jwt.JwtAuthenticationFilter;
 import com.fittracker.fittracker.services.CustomUserDetailsService;
 
 @Configuration

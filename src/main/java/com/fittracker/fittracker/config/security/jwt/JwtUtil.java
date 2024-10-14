@@ -1,4 +1,4 @@
-package com.fittracker.fittracker.jwt;
+package com.fittracker.fittracker.config.security.jwt;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
