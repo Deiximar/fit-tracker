@@ -12,6 +12,7 @@ import com.fittracker.fittracker.models.dto.LoginDto;
 import com.fittracker.fittracker.models.dto.RegisterDto;
 import com.fittracker.fittracker.services.UserService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -22,13 +23,13 @@ public class AuthController {
   private final UserService userService;
 
   @PostMapping("login")
-  public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginRequest) {
+  public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid LoginDto loginRequest) {
     AuthResponseDto response = userService.login(loginRequest);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   @PostMapping("register")
-  public ResponseEntity<AuthResponseDto> register(@RequestBody RegisterDto request) {
+  public ResponseEntity<AuthResponseDto> register(@RequestBody @Valid RegisterDto request) {
     AuthResponseDto response = userService.register(request);
     return ResponseEntity.ok(response);
 
