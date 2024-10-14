@@ -11,6 +11,5 @@ public class LoginDto {
   private String email;
 
   @NotBlank(message = "The password field is required.")
-  @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", message = "Must contain at least eight characters, one uppercase letter, one lowercase letter, one number and one special character.")
   private String password;
 }
