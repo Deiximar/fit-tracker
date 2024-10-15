@@ -5,22 +5,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.fittracker.fittracker.config.exceptions.ResourceNotFoundException;
-import com.fittracker.fittracker.models.dto.ExerciseDto;
-import com.fittracker.fittracker.models.dto.PagedResponseDto;
 import com.fittracker.fittracker.models.entity.Exercise;
 import com.fittracker.fittracker.repositories.ExerciseRepository;
 import com.fittracker.fittracker.services.ExerciseService;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class ExerciseServiceImpl implements ExerciseService {
+  private final ExerciseRepository exerciseRepository;
 
-  private ExerciseRepository exerciseRepository;
-
-  public ExerciseServiceImpl(ExerciseRepository exerciseRepository) {
-    this.exerciseRepository = exerciseRepository;
-  }
-
-  public PagedResponseDto getAllExercises(Pageable pageable, String bodyPart, String equipment, String searchText) {
+  public Page<Exercise> getAllExercises(Pageable pageable, String bodyPart, String equipment, String searchText) {
     Page<Exercise> exercises;
     if (searchText != null) {
       exercises = exerciseRepository.findByNameContainingIgnoreCase(searchText, pageable);
@@ -33,33 +29,12 @@ public class ExerciseServiceImpl implements ExerciseService {
     } else {
       exercises = exerciseRepository.findAll(pageable);
     }
-    Page<ExerciseDto> exerciseDtos = exercises.map(this::toDto);
-    PagedResponseDto response = new PagedResponseDto();
-    response.setContent(exerciseDtos.getContent());
-    response.setPageNumber(exerciseDtos.getNumber());
-    response.setPageSize(exerciseDtos.getSize());
-    response.setTotalElements(exerciseDtos.getTotalElements());
-    response.setTotalPages(exerciseDtos.getTotalPages());
-    response.setLast(exerciseDtos.isLast());
-    response.setPageable(exerciseDtos.getPageable());
-    return response;
+    return exercises;
   }
 
   @Override
-  public ExerciseDto getExerciseById(Integer id) {
-    Exercise exercise = exerciseRepository.findById(id)
+  public Exercise getExerciseById(Integer id) {
+    return exerciseRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Exercise not found"));
-    return toDto(exercise);
-  }
-
-  private ExerciseDto toDto(Exercise exercise) {
-    ExerciseDto dto = new ExerciseDto();
-    dto.setId(exercise.getId());
-    dto.setName(exercise.getName());
-    dto.setBodyPart(exercise.getBodyPart());
-    dto.setEquipment(exercise.getEquipment());
-    dto.setGifPath(exercise.getGifPath());
-    dto.setInstructions(exercise.getInstructions());
-    return dto;
   }
 }
