@@ -40,10 +40,10 @@ public class UserEntity implements UserDetails {
 
   private LocalDate birthday;
 
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "user")
   private List<WeightRecord> weightRecords;
 
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "user")
   private List<Routine> routines;
 
   @Override
