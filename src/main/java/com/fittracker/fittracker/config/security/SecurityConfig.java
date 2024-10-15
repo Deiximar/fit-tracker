@@ -1,5 +1,6 @@
 package com.fittracker.fittracker.config.security;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -78,6 +79,11 @@ public class SecurityConfig {
             .allowCredentials(true);
       }
     };
+  }
+
+  @Bean
+  public ModelMapper modelMapper() {
+    return new ModelMapper();
   }
 
 }
