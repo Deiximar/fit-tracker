@@ -2,19 +2,25 @@ package com.fittracker.fittracker.services;
 
 import java.util.List;
 
-import com.fittracker.fittracker.models.dto.RoutineDto;
+import com.fittracker.fittracker.models.entity.Routine;
+import com.fittracker.fittracker.models.entity.RoutineExercise;
+import com.fittracker.fittracker.models.entity.UserEntity;
 
 public interface RoutineService {
-  List<RoutineDto> getAllRoutines();
+  List<Routine> getAllRoutines();
 
-  List<RoutineDto> getUserRoutines(String email);
+  List<Routine> getUserRoutines(UserEntity user);
 
-  RoutineDto getRoutineById(Integer id);
+  Routine getRoutineById(Integer id);
 
-  RoutineDto createRoutine(RoutineDto routineDto);
+  Routine createRoutine(Routine routineDto, UserEntity user);
 
-  RoutineDto updateRoutine(Integer id, RoutineDto routineDto);
+  Routine createRoutineWithExercises(Routine routine, UserEntity user);
 
-  void deleteRoutine(Integer id);
+  Routine updateRoutine(Integer id, Routine routineDto, UserEntity user);
+
+  Routine updateRoutineWithExercises(Integer RoutineId, Routine updatedRoutine, UserEntity user);
+
+  void deleteRoutine(Integer id, UserEntity userEntity);
 
 }
