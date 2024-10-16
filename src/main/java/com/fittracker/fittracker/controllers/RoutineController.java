@@ -1,9 +1,9 @@
 package com.fittracker.fittracker.controllers;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fittracker.fittracker.models.dto.PagedResponseDto;
 import com.fittracker.fittracker.models.dto.RoutineDto;
 import com.fittracker.fittracker.models.entity.Routine;
 import com.fittracker.fittracker.models.entity.UserEntity;
@@ -35,18 +37,23 @@ public class RoutineController {
   private final ModelMapper modelMapper;
 
   @GetMapping
-  public ResponseEntity<List<RoutineDto>> getAllRoutines() {
-    List<Routine> routineList = routineService.getAllRoutines();
-    return ResponseEntity.ok(routineList.stream().map(this::mapRoutineToDto).collect(Collectors.toList()));
+  public ResponseEntity<PagedResponseDto<RoutineDto>> getAllRoutines(@RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "4") int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    Page<RoutineDto> routines = routineService.getAllRoutines(pageable).map(this::mapRoutineToDto);
+    return ResponseEntity.ok(mapPage(routines));
   }
 
   @GetMapping("/my-routines")
-  public ResponseEntity<List<RoutineDto>> getMyRoutines() {
+  public ResponseEntity<PagedResponseDto<RoutineDto>> getMyRoutines(@RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "4") int size) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String userEmail = authentication.getName();
     UserEntity user = userService.getUser(userEmail);
-    List<Routine> routineList = routineService.getUserRoutines(user);
-    return ResponseEntity.ok(routineList.stream().map(this::mapRoutineToDto).collect(Collectors.toList()));
+    Pageable pageable = PageRequest.of(page, size);
+    Page<RoutineDto> routines = routineService.getUserRoutines(pageable, user).map(this::mapRoutineToDto);
+
+    return ResponseEntity.ok(mapPage(routines));
   }
 
   @GetMapping("{id}")
@@ -90,6 +97,18 @@ public class RoutineController {
   private RoutineDto mapRoutineToDto(Routine routine) {
     RoutineDto routineDto = modelMapper.map(routine, RoutineDto.class);
     return routineDto;
+  }
+
+  private PagedResponseDto<RoutineDto> mapPage(Page<RoutineDto> routineDto) {
+    PagedResponseDto<RoutineDto> response = new PagedResponseDto<RoutineDto>();
+    response.setContent(routineDto.getContent());
+    response.setPageNumber(routineDto.getNumber());
+    response.setPageSize(routineDto.getSize());
+    response.setTotalElements(routineDto.getTotalElements());
+    response.setTotalPages(routineDto.getTotalPages());
+    response.setIslast(routineDto.isLast());
+    response.setPageable(routineDto.getPageable());
+    return response;
   }
 
 }

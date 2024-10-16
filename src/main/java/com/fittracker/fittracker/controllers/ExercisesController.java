@@ -28,7 +28,7 @@ public class ExercisesController {
   private final ModelMapper modelMapper;
 
   @GetMapping
-  public ResponseEntity<PagedResponseDto> getAllExercises(@RequestParam(defaultValue = "0") int page,
+  public ResponseEntity<PagedResponseDto<ExerciseDto>> getAllExercises(@RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String bodyPart,
       @RequestParam(required = false) String equipment, @RequestParam(required = false) String searchText) {
     Pageable pageable = PageRequest.of(page, size);
@@ -47,8 +47,8 @@ public class ExercisesController {
     return modelMapper.map(exercise, ExerciseDto.class);
   }
 
-  private PagedResponseDto mapPage(Page<ExerciseDto> exerciseDtos) {
-    PagedResponseDto response = new PagedResponseDto();
+  private PagedResponseDto<ExerciseDto> mapPage(Page<ExerciseDto> exerciseDtos) {
+    PagedResponseDto<ExerciseDto> response = new PagedResponseDto<ExerciseDto>();
     response.setContent(exerciseDtos.getContent());
     response.setPageNumber(exerciseDtos.getNumber());
     response.setPageSize(exerciseDtos.getSize());

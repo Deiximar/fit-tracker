@@ -1,15 +1,15 @@
 package com.fittracker.fittracker.services;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.fittracker.fittracker.models.entity.Routine;
-import com.fittracker.fittracker.models.entity.RoutineExercise;
 import com.fittracker.fittracker.models.entity.UserEntity;
 
 public interface RoutineService {
-  List<Routine> getAllRoutines();
+  Page<Routine> getAllRoutines(Pageable pageable);
 
-  List<Routine> getUserRoutines(UserEntity user);
+  Page<Routine> getUserRoutines(Pageable pageable, UserEntity user);
 
   Routine getRoutineById(Integer id);
 

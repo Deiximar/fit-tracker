@@ -2,6 +2,9 @@ package com.fittracker.fittracker.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.fittracker.fittracker.config.exceptions.ResourceNotFoundException;
@@ -26,13 +29,13 @@ public class RoutineServiceImpl implements RoutineService {
   private final ExerciseService exerciseService;
 
   @Override
-  public List<Routine> getAllRoutines() {
-    return routineRepository.findAll();
+  public Page<Routine> getAllRoutines(Pageable pageable) {
+    return routineRepository.findAll(pageable);
   }
 
   @Override
-  public List<Routine> getUserRoutines(UserEntity user) {
-    return routineRepository.findByUserEmail(user.getEmail());
+  public Page<Routine> getUserRoutines(Pageable pageable, UserEntity user) {
+    return routineRepository.findByUserEmail(pageable, user.getEmail());
   }
 
   @Override
