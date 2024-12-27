@@ -2,7 +2,6 @@ package com.fittracker.fittracker.models.entity;
 
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -37,6 +36,6 @@ public class Routine {
   @JoinColumn(name = "user_id", nullable = false)
   private UserEntity user;
 
-  @OneToMany(mappedBy = "routine", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "routine")
   private List<RoutineExercise> routineExercises;
 }

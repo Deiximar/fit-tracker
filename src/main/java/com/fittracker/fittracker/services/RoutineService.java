@@ -1,20 +1,26 @@
 package com.fittracker.fittracker.services;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import com.fittracker.fittracker.models.dto.RoutineDto;
+import com.fittracker.fittracker.models.entity.Routine;
+import com.fittracker.fittracker.models.entity.UserEntity;
 
 public interface RoutineService {
-  List<RoutineDto> getAllRoutines();
+  Page<Routine> getAllRoutines(Pageable pageable);
 
-  List<RoutineDto> getUserRoutines(String email);
+  Page<Routine> getUserRoutines(Pageable pageable, UserEntity user);
 
-  RoutineDto getRoutineById(Integer id);
+  Routine getRoutineById(Integer id);
 
-  RoutineDto createRoutine(RoutineDto routineDto);
+  Routine createRoutine(Routine routineDto, UserEntity user);
 
-  RoutineDto updateRoutine(Integer id, RoutineDto routineDto);
+  Routine createRoutineWithExercises(Routine routine, UserEntity user);
 
-  void deleteRoutine(Integer id);
+  Routine updateRoutine(Integer id, Routine routineDto, UserEntity user);
+
+  Routine updateRoutineWithExercises(Integer RoutineId, Routine updatedRoutine, UserEntity user);
+
+  void deleteRoutine(Integer id, UserEntity userEntity);
 
 }

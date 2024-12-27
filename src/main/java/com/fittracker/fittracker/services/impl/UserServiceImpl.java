@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.fittracker.fittracker.config.exceptions.ExistingEmailException;
+import com.fittracker.fittracker.config.exceptions.ResourceNotFoundException;
 import com.fittracker.fittracker.config.exceptions.UsernameNotFoundException;
 import com.fittracker.fittracker.config.security.jwt.JwtUtil;
 import com.fittracker.fittracker.models.dto.*;
@@ -59,6 +60,11 @@ public class UserServiceImpl implements UserService {
     userRepository.save(user);
     String token = jwtUtil.generateToken(user.getEmail());
     return new AuthResponseDto(token);
+  }
+
+  @Override
+  public UserEntity getUser(String userEmail) {
+    return userRepository.findByEmail(userEmail).orElseThrow(() -> new ResourceNotFoundException("User not found"));
   }
 
 }

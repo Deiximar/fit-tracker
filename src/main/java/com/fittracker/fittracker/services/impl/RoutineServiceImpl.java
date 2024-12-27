@@ -2,178 +2,130 @@ package com.fittracker.fittracker.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.fittracker.fittracker.config.exceptions.ResourceNotFoundException;
 import com.fittracker.fittracker.config.exceptions.UnauthorizedException;
-import com.fittracker.fittracker.models.dto.ExerciseTargetDto;
-import com.fittracker.fittracker.models.dto.RoutineDto;
-import com.fittracker.fittracker.models.dto.RoutineExerciseDto;
 import com.fittracker.fittracker.models.entity.Exercise;
-import com.fittracker.fittracker.models.entity.ExerciseTarget;
 import com.fittracker.fittracker.models.entity.Routine;
 import com.fittracker.fittracker.models.entity.RoutineExercise;
 import com.fittracker.fittracker.models.entity.UserEntity;
-import com.fittracker.fittracker.repositories.ExerciseRepository;
-import com.fittracker.fittracker.repositories.RoutineExerciseRepository;
 import com.fittracker.fittracker.repositories.RoutineRepository;
-import com.fittracker.fittracker.repositories.UserRepository;
+import com.fittracker.fittracker.services.ExerciseService;
+import com.fittracker.fittracker.services.RoutineExerciseService;
 import com.fittracker.fittracker.services.RoutineService;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class RoutineServiceImpl implements RoutineService {
 
-  private RoutineRepository routineRepository;
-  private UserRepository userRepository;
-  private ExerciseRepository exerciseRepository;
-  private RoutineExerciseRepository routineExerciseRepository;
+  private final RoutineRepository routineRepository;
+  private final RoutineExerciseService routineExerciseService;
+  private final ExerciseService exerciseService;
 
-  public RoutineServiceImpl(RoutineRepository routineRepository, UserRepository userRepository,
-      ExerciseRepository exerciseRepository, RoutineExerciseRepository routineExerciseRepository) {
-    this.routineRepository = routineRepository;
-    this.userRepository = userRepository;
-    this.exerciseRepository = exerciseRepository;
-    this.routineExerciseRepository = routineExerciseRepository;
+  @Override
+  public Page<Routine> getAllRoutines(Pageable pageable) {
+    return routineRepository.findAll(pageable);
   }
 
   @Override
-  public List<RoutineDto> getAllRoutines() {
-    List<Routine> routines = routineRepository.findAll();
-    return routines.stream().map(this::routineToDto).collect(Collectors.toList());
+  public Page<Routine> getUserRoutines(Pageable pageable, UserEntity user) {
+    return routineRepository.findByUserEmail(pageable, user.getEmail());
   }
 
   @Override
-  public List<RoutineDto> getUserRoutines(String userEmail) {
-    List<Routine> routines = routineRepository.findByUserEmail(userEmail);
-    return routines.stream().map(this::routineToDto).collect(Collectors.toList());
-  }
-
-  @Override
-  public RoutineDto getRoutineById(Integer id) {
-    Routine routine = routineRepository.findById(id)
+  public Routine getRoutineById(Integer id) {
+    return routineRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Routine not found"));
-    return routineToDto(routine);
   }
 
   @Override
-  public RoutineDto createRoutine(RoutineDto routineDto) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String userEmail = authentication.getName();
-    UserEntity user = userRepository.findByEmail(userEmail)
-        .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-    Routine routine = new Routine();
-    routine.setName(routineDto.getName());
+  public Routine createRoutine(Routine routine, UserEntity user) {
     routine.setUser(user);
-
-    List<RoutineExercise> routineExercises = new ArrayList<>();
-
-    for (RoutineExerciseDto routineExerciseDto : routineDto.getRoutineExercises()) {
-      RoutineExercise routineExercise = new RoutineExercise();
-      Exercise exercise = exerciseRepository.findById(routineExerciseDto.getExerciseId())
-          .orElseThrow(() -> new IllegalArgumentException("Invalid exercise ID"));
-      routineExercise.setExercise(exercise);
-      routineExercise.setRoutine(routine);
-
-      List<ExerciseTarget> targets = new ArrayList<>();
-      for (ExerciseTargetDto targetDto : routineExerciseDto.getTargets()) {
-        ExerciseTarget target = new ExerciseTarget();
-        target.setSetNumber(targetDto.getSetNumber());
-        target.setReps(targetDto.getReps());
-        target.setWeight(targetDto.getWeight());
-        target.setRoutineExercise(routineExercise);
-        targets.add(target);
-      }
-      routineExercise.setTargets(targets);
-      routineExercises.add(routineExercise);
-    }
-    routine.setRoutineExercises(routineExercises);
-    routine = routineRepository.save(routine);
-    return routineToDto(routine);
+    return routineRepository.save(routine);
   }
 
   @Override
-  public RoutineDto updateRoutine(Integer id, RoutineDto routineDto) {
-    System.out.println(routineDto);
-    Routine routine = routineRepository.findById(id)
+  public Routine createRoutineWithExercises(Routine routine, UserEntity user) {
+    Routine createdRoutine = createRoutine(routine, user);
+    if (routine.getRoutineExercises() != null) {
+      for (RoutineExercise routineExercise : routine.getRoutineExercises()) {
+        Exercise exercise = exerciseService.getExerciseById(routineExercise.getExercise().getId());
+        routineExerciseService.addRoutineExercise(createdRoutine, exercise, routineExercise);
+      }
+    }
+    createdRoutine.setRoutineExercises(routine.getRoutineExercises());
+    return createdRoutine;
+  }
+
+  @Override
+  public Routine updateRoutine(Integer routineId, Routine updatedRoutine, UserEntity user) {
+    Routine routine = routineRepository.findById(routineId)
         .orElseThrow(() -> new ResourceNotFoundException("Routine not found"));
 
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String userEmail = authentication.getName();
-    if (!routine.getUser().getEmail().equals(userEmail)) {
+    if (!routine.getUser().equals(user)) {
       throw new UnauthorizedException("User is not authorized to update this routine");
     }
-    routine.setName(routineDto.getName());
-    routineExerciseRepository.deleteByRoutineId(routine.getId());
-
-    final Routine finalRoutine = routine;
-    List<RoutineExercise> updatedRoutineExercises = routineDto.getRoutineExercises().stream()
-        .map(routineExerciseDto -> {
-          Exercise exercise = exerciseRepository.findById(routineExerciseDto.getExerciseId())
-              .orElseThrow(
-                  () -> new ResourceNotFoundException(
-                      "Exercise not found: " + routineExerciseDto.getExerciseId() + "ee"));
-
-          RoutineExercise routineExercise = new RoutineExercise();
-          routineExercise.setRoutine(finalRoutine);
-          routineExercise.setExercise(exercise);
-          routineExercise.setTargets(
-              routineExerciseDto.getTargets().stream()
-                  .map(targetDto -> new ExerciseTarget(
-                      targetDto.getSetNumber(),
-                      targetDto.getReps(),
-                      targetDto.getWeight()))
-                  .collect(Collectors.toList()));
-          return routineExercise;
-        }).collect(Collectors.toList());
-
-    routine.setRoutineExercises(updatedRoutineExercises);
-
-    routine = routineRepository.save(routine);
-    return routineToDto(routine);
+    routine.setName(updatedRoutine.getName());
+    return routine;
   }
 
   @Override
-  public void deleteRoutine(Integer id) {
+  public Routine updateRoutineWithExercises(Integer RoutineId, Routine updatedRoutine, UserEntity user) {
+
+    Routine routine = updateRoutine(RoutineId, updatedRoutine, user);
+
+    List<RoutineExercise> existingRoutineExercises = routine.getRoutineExercises();
+    List<RoutineExercise> updatedRoutineExercises = new ArrayList<>();
+
+    if (updatedRoutine.getRoutineExercises() != null) {
+      for (RoutineExercise routineExercise : updatedRoutine.getRoutineExercises()) {
+        Exercise exercise = exerciseService.getExerciseById(routineExercise.getExercise().getId());
+
+        RoutineExercise existingRoutineExercise = existingRoutineExercises.stream()
+            .filter(re -> re.getExercise().getId().equals(routineExercise.getExercise().getId()))
+            .findFirst().orElse(null);
+
+        if (existingRoutineExercise != null && existingRoutineExercise.getId() == routineExercise.getId()) {
+          routineExerciseService.updateRoutineExercise(existingRoutineExercise);
+          updatedRoutineExercises.add(existingRoutineExercise);
+        } else {
+          RoutineExercise newRoutineExercise = routineExerciseService.addRoutineExercise(routine, exercise,
+              routineExercise);
+          updatedRoutineExercises.add(newRoutineExercise);
+        }
+      }
+    }
+    for (RoutineExercise existingExercise : existingRoutineExercises) {
+      boolean stillExists = updatedRoutine.getRoutineExercises().stream()
+          .anyMatch(re -> re.getExercise().getId().equals(existingExercise.getExercise().getId()));
+
+      boolean addedToUpdate = updatedRoutineExercises.stream()
+          .anyMatch(re -> re.getId().equals(existingExercise.getId()));
+
+      if (!stillExists || !addedToUpdate) {
+        routineExerciseService.deleteRoutineExercise(existingExercise);
+      }
+    }
+    routine.setRoutineExercises(updatedRoutineExercises);
+    return routine;
+  }
+
+  @Override
+  public void deleteRoutine(Integer id, UserEntity user) {
     Routine routine = routineRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Routine not found"));
-
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String userEmail = authentication.getName();
-    if (!routine.getUser().getEmail().equals(userEmail)) {
+    if (!routine.getUser().equals(user)) {
       throw new UnauthorizedException("User is not authorized to delete this routine");
     }
-    routineRepository.deleteById(id);
-  }
-
-  private RoutineDto routineToDto(Routine routine) {
-    RoutineDto dto = new RoutineDto();
-    dto.setId(routine.getId());
-    dto.setName(routine.getName());
-    dto.setRoutineExercises(
-        routine.getRoutineExercises().stream().map(this::routineExerciseToDto).collect(Collectors.toList()));
-    return dto;
-  }
-
-  private RoutineExerciseDto routineExerciseToDto(RoutineExercise routineExercise) {
-    RoutineExerciseDto dto = new RoutineExerciseDto();
-    dto.setId(routineExercise.getId());
-    dto.setExerciseId(routineExercise.getExercise().getId());
-    dto.setExerciseName(routineExercise.getExercise().getName());
-    dto.setTargets(routineExercise.getTargets().stream().map(this::exerciseTargetDto).collect(Collectors.toList()));
-    return dto;
-  }
-
-  private ExerciseTargetDto exerciseTargetDto(ExerciseTarget exerciseTarget) {
-    ExerciseTargetDto dto = new ExerciseTargetDto();
-    dto.setId(exerciseTarget.getId());
-    dto.setReps(exerciseTarget.getReps());
-    dto.setSetNumber(exerciseTarget.getSetNumber());
-    dto.setWeight(exerciseTarget.getWeight());
-    return dto;
+    for (RoutineExercise routineExercise : routine.getRoutineExercises()) {
+      routineExerciseService.deleteRoutineExercise(routineExercise);
+    }
+    routineRepository.delete(routine);
   }
 }

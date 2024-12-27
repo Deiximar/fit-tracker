@@ -9,5 +9,5 @@ import com.fittracker.fittracker.models.entity.WeightRecord;
 
 @Repository
 public interface WeightRecordRepository extends JpaRepository<WeightRecord, Integer> {
-  List<WeightRecord> findByUserId(Integer userId);
+  List<WeightRecord> findByUserEmail(String email);
 }
