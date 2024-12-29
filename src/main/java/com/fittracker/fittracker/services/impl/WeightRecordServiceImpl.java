@@ -21,7 +21,7 @@ public class WeightRecordServiceImpl implements WeightRecordService {
   public WeightRecord createWeightRecord(UserEntity user, float weight) {
     WeightRecord weightRecord = new WeightRecord();
     weightRecord.setUser(user);
-    weightRecord.setDate(LocalDate.of(2024, 4, 12));
+    weightRecord.setDate(LocalDate.now());
     weightRecord.setWeight(weight);
     return weightRecordRepository.save(weightRecord);
   }
